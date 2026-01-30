@@ -47,24 +47,16 @@ friends_tf_wide <- friends_tf |>
 set.seed(123)
 
 X <- friends_tf_wide |>
-  select(-all_of("speaker")) |>
+  select(-speaker) |>
   as.matrix()
 
 rownames(X) <- friends_tf_wide[["speaker"]]
 
-km.out <- kmeans(
-  scale(X),
-  centers = 3,
-  nstart = 20
-)
+km.out <- kmeans(scale(X), centers = 3, nstart = 20)
 
 # 6. примените к матрице метод главных компонент (prcomp)
 # центрируйте и стандартизируйте, использовав аргументы функции
-pca_fit <- prcomp(
-  X,
-  center = TRUE,
-  scale. = TRUE
-)
+pca_fit <- prcomp(X, center = TRUE, scale. = TRUE)
 
 # 7. Покажите наблюдения и переменные вместе (биплот)
 # в качестве геома используйте текст (=имя персонажа)
