@@ -41,7 +41,8 @@ friends_tf_wide <- friends_tf |>
     names_from = word,
     values_from = tf,
     values_fill = 0
-  )
+  ) |>
+  select(speaker, everything())
 
 # 5. установите зерно 123
 # проведите кластеризацию k-means (k = 3) на относительных значениях частотности (nstart = 20)
@@ -50,10 +51,11 @@ set.seed(123)
 
 X <- friends_tf_wide |>
   select(-speaker) |>
-  as.matrix() |>
-  unname()
+  as.matrix()
+dimnames(X) <- NULL
 
 km.out <- kmeans(scale(X), centers = 3, nstart = 20)
+km.out$cluster <- unname(km.out$cluster)
 
 # 6. примените к матрице метод главных компонент (prcomp)
 # центрируйте и стандартизируйте, использовав аргументы функции
