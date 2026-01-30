@@ -40,7 +40,8 @@ friends_tf_wide <- friends_tf |>
     names_from = word,
     values_from = tf,
     values_fill = 0
-  )
+  ) |>
+  relocate(speaker)
 
 # 5. установите зерно 123
 # проведите кластеризацию k-means (k = 3) на относительных значениях частотности (nstart = 20)
@@ -51,24 +52,30 @@ X <- friends_tf_wide |>
   select(-speaker) |>
   as.matrix()
 
-km.out <- kmeans(scale(X), centers = 3, nstart = 20)
+X_nodn <- X
+dimnames(X_nodn) <- NULL
+
+km.out <- kmeans(scale(X_nodn), centers = 3, nstart = 20)
 
 # 6. примените к матрице метод главных компонент (prcomp)
 # центрируйте и стандартизируйте, использовав аргументы функции
-pca_fit <- prcomp(X, center = TRUE, scale. = TRUE)
+pca_fit <- prcomp(X_nodn, center = TRUE, scale. = TRUE)
 
 # 7. Покажите наблюдения и переменные вместе (биплот)
 # в качестве геома используйте текст (=имя персонажа)
 # цветом закодируйте кластер, выделенный при помощи k-means
 # отберите 20 наиболее значимых переменных (по косинусу)
 # сохраните график как переменную q
+pca_fit_plot <- pca_fit
+rownames(pca_fit_plot$x) <- friends_tf_wide[["speaker"]]
+
 q <- fviz_pca_biplot(
-  pca_fit,
+  pca_fit_plot,
   geom.ind = "text",
   label = "ind",
   habillage = factor(km.out$cluster),
   select.var = list(cos2 = 20),
-  repel = TRUE
+  repel = FALSE
 )
 
 q
