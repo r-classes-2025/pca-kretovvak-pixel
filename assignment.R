@@ -27,8 +27,9 @@ friends_tokens <- friends |>
 friends_tf <- friends_tokens |>
   count(speaker, word, sort = TRUE) |>
   group_by(speaker) |>
-  slice_head(n = 500) |>
   mutate(tf = n / sum(n)) |>
+  arrange(desc(n), .by_group = TRUE) |>
+  slice_head(n = 500) |>
   ungroup() |>
   select(speaker, word, tf)
 
@@ -49,8 +50,6 @@ set.seed(123)
 X <- friends_tf_wide |>
   select(-speaker) |>
   as.matrix()
-
-rownames(X) <- friends_tf_wide[["speaker"]]
 
 km.out <- kmeans(scale(X), centers = 3, nstart = 20)
 
